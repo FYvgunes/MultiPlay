@@ -1,0 +1,17 @@
+{
+  "name": "Aile Oyun Salonu",
+  "short_name": "Oyun Salonu",
+  "description": "Ailenle link paylaşarak karşılıklı oyun oyna",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#221610",
+  "theme_color": "#221610",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

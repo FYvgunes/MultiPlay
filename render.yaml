@@ -1,0 +1,12 @@
+# Render.com Blueprint — tek tıkla deploy (ücretsiz plan).
+# Repo'yu Render'a bağla, "New +" > "Blueprint" seç; bu dosyayı okur.
+services:
+  - type: web
+    name: aile-oyun-salonu
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
