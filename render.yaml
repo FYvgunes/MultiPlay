@@ -5,7 +5,9 @@ services:
     name: aile-oyun-salonu
     runtime: node
     plan: free
-    buildCommand: npm install && npm run build
+    # NODE_ENV=production iken `npm install` devDependencies'i (vite, tsc)
+    # atlar; --include=dev ile build araçları yine kurulur.
+    buildCommand: npm install --include=dev && npm run build
     startCommand: npm run start
     envVars:
       - key: NODE_ENV
