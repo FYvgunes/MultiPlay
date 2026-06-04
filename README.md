@@ -69,11 +69,15 @@ PORT=4010 NODE_ENV=production npm run start
 
 ## Deploy
 
-### Render.com (en kolay, ücretsiz)
+### Render.com (en kolay, ücretsiz) — tek tık
 
-1. Projeyi bir GitHub reposuna gönder.
-2. Render → **New + → Blueprint** → repoyu seç (kökteki `render.yaml` okunur).
-3. Deploy bitince verilen `https://...onrender.com` adresini ailenle paylaş.
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/FYvgunes/MultiPlay)
+
+1. Yukarıdaki butona tıkla → Render'a (GitHub ile) giriş yap.
+2. Render kökteki `render.yaml`'ı okur → **Apply** de.
+3. Build bitince verilen `https://...onrender.com` adresini ailenle paylaş.
+
+Alternatif (manuel): Render → **New + → Blueprint** → repoyu seç → Apply.
 
 Build: `npm install && npm run build` · Start: `npm run start` · `PORT` Render
 tarafından otomatik verilir. (Ücretsiz plan bir süre boştaysa uyur; ilk açılış
