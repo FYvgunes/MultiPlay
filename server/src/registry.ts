@@ -5,6 +5,8 @@ import { tictactoeModule } from './games/tictactoe.js';
 import { hangmanModule } from './games/hangman.js';
 import { namecityModule } from './games/namecity.js';
 import { wordleModule } from './games/wordle.js';
+import { damaModule } from './games/dama.js';
+import { tombalaModule } from './games/tombala.js';
 
 // gameId -> GameModule. Yeni oyun eklemek için: modülü yaz ve buraya kaydet.
 const modules = new Map<string, GameModule>();
@@ -19,6 +21,8 @@ register(tictactoeModule as unknown as GameModule);
 register(hangmanModule as unknown as GameModule);
 register(namecityModule as unknown as GameModule);
 register(wordleModule as unknown as GameModule);
+register(damaModule as unknown as GameModule);
+register(tombalaModule as unknown as GameModule);
 
 export function getModule(id: string): GameModule | undefined {
   return modules.get(id);

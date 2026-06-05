@@ -68,6 +68,12 @@ Link paylaşarak ailenle karşılıklı oyun. İlk oyun: **satranç**. Mimari ba
 - [x] Hepsi `GameModule` sözleşmesine uygun; registry + Lobi + Game.tsx etiketleri bağlandı
 - [x] Build + uçtan uca bot-vs-bot mantık testi geçti
 
+## Faz 8 — Geleneksel oyunlar ✅
+- [x] **Dama (Türk Daması)**: ortogonal hareket, zorunlu çoklu alma, uçan dama,
+      terfi, alfa-beta bot (Kolay→Usta), ilerleme-yok beraberlik kuralı (sonlanma garanti)
+- [x] **Tombala**: geçerli 3×9 kart üretimi, süreli oto-çekiliş (timer), manuel
+      işaretleme, çinko/tombala tespiti, bot kusursuz oto-işaretler (`pendingSeats`+`getBotMove`)
+- [x] registry + Lobi + CSS bağlandı; build + bot/simülasyon testleri geçti
+
 ## İleride
-- [ ] Geleneksel oyunlar: Dama, Tombala
 - [ ] Capacitor ile iOS/Android paketi (Faz 5)

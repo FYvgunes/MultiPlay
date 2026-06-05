@@ -10,15 +10,12 @@ const ICONS: Record<string, string> = {
   hangman: '🔤',
   namecity: '🏙️',
   wordle: '🟩',
-  checkers: '🔴',
+  dama: '🔴',
   tombala: '🎱',
 };
 
-const SOON: { id: string; name: string }[] = [
-  { id: 'checkers', name: 'Dama' },
-  { id: 'tictactoe', name: 'XOX' },
-  { id: 'tombala', name: 'Tombala' },
-];
+// Tüm planlanan oyunlar yayında. Yeni "Yakında" oyunları buraya eklenir.
+const SOON: { id: string; name: string }[] = [];
 
 const LEVELS = [
   { d: 1, label: 'Kolay' },

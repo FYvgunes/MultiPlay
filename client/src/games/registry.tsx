@@ -6,6 +6,8 @@ import TicTacToeGame from './tictactoe';
 import HangmanGame from './hangman';
 import NameCityGame from './namecity';
 import WordleGame from './wordle';
+import DamaGame from './dama';
+import TombalaGame from './tombala';
 
 /** Her oyun bileşeninin aldığı ortak proplar. */
 export interface GameComponentProps {
@@ -21,6 +23,8 @@ const components: Record<string, ComponentType<GameComponentProps>> = {
   hangman: HangmanGame,
   namecity: NameCityGame,
   wordle: WordleGame,
+  dama: DamaGame,
+  tombala: TombalaGame,
 };
 
 export function getGameComponent(
