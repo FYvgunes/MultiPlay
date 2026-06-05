@@ -26,22 +26,25 @@ export interface Room {
   createdAt: number;
   lastActivity: number;
   difficulty?: number; // bota karşı oyunlarda
+  config?: unknown; // oyuna özel ayar (quiz: {category, kids})
+  timer?: ReturnType<typeof setTimeout>; // süreli oyunlar için
 }
 
 const rooms = new Map<string, Room>();
 const ROOM_TTL_MS = 60 * 60 * 1000; // 1 saat hareketsiz oda silinir
 
-export function createRoom(module: GameModule): Room {
+export function createRoom(module: GameModule, config?: unknown): Room {
   let id = newRoomId();
   while (rooms.has(id)) id = newRoomId();
   const now = Date.now();
   const room: Room = {
     id,
     module,
-    state: module.createInitialState(),
+    state: module.createInitialState(config),
     players: [],
     createdAt: now,
     lastActivity: now,
+    config,
   };
   rooms.set(id, room);
   return room;
@@ -68,12 +71,18 @@ export function addBot(room: Room, difficulty: number): void {
   room.difficulty = d;
 }
 
-/** Sıradaki koltukta bot var mı? Varsa o koltuğu döndürür. */
+/** Hareket bekleyen koltuklardan biri bot ise o koltuğu döndürür. */
 export function botSeatToMove(room: Room): number | null {
-  const seat = room.module.turnSeat?.(room.state) ?? null;
-  if (seat === null) return null;
-  const p = room.players[seat];
-  return p?.isBot ? seat : null;
+  const pending =
+    room.module.pendingSeats?.(room.state) ??
+    (() => {
+      const s = room.module.turnSeat?.(room.state) ?? null;
+      return s === null ? [] : [s];
+    })();
+  for (const seat of pending) {
+    if (room.players[seat]?.isBot) return seat;
+  }
+  return null;
 }
 
 /**
@@ -137,7 +146,7 @@ export function getSeat(room: Room, playerId: string): Seat {
 }
 
 export function resetGame(room: Room): void {
-  room.state = room.module.createInitialState();
+  room.state = room.module.createInitialState(room.config);
   room.lastActivity = Date.now();
 }
 

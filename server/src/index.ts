@@ -62,15 +62,55 @@ function broadcastState(room: Room) {
   }
   const status = room.module.getStatus(room.state);
   if (status.over) io.to(room.id).emit('gameOver', status);
+  scheduleTimer(room); // süreli oyunlar için zamanlayıcıyı yenile
 }
 
-/** Sıra bir bottaysa hamlesini yaptırır (gerekirse arka arkaya). */
+/** Süreli oyunlar: getDeadline'a göre otomatik ilerleme zamanlayıcısı. */
+function scheduleTimer(room: Room) {
+  if (room.timer) {
+    clearTimeout(room.timer);
+    room.timer = undefined;
+  }
+  const deadline = room.module.getDeadline?.(room.state);
+  if (!deadline || !room.module.onTimeout) return;
+  const delay = Math.max(0, deadline - Date.now());
+  room.timer = setTimeout(() => {
+    room.timer = undefined;
+    const r = getRoom(room.id);
+    if (!r) return;
+    const res = r.module.onTimeout?.(r.state);
+    if (res && res.ok && res.state !== undefined) {
+      r.state = res.state;
+      r.lastActivity = Date.now();
+      broadcastState(r); // yeniden zamanlar + bitti ise gameOver
+      void maybeBotMove(r);
+    }
+  }, delay);
+}
+
+/** Async kurulum (AI soru üretimi) sonrası oyunu başlatır. */
+async function initAndStart(room: Room) {
+  if (room.module.init) {
+    try {
+      room.state = await room.module.init(room.state, room.config);
+    } catch (e) {
+      console.error('init hatası:', e);
+    }
+  }
+  room.lastActivity = Date.now();
+  broadcastState(room);
+  void maybeBotMove(room);
+}
+
+/** Hareket bekleyen koltuk bottaysa hamlesini yaptırır (arka arkaya). */
 async function maybeBotMove(room: Room) {
   for (;;) {
     if (room.module.getStatus(room.state).over) return;
     const seat = botSeatToMove(room);
     if (seat === null) return;
-    await sleep(550); // doğal "düşünme" hissi
+    await sleep(room.module.getBotDelayMs?.() ?? 550);
+    // Gecikme sırasında durum değişmiş olabilir (ör. süre doldu); doğrula.
+    if (botSeatToMove(room) !== seat) continue;
     const mv = room.module.getBotMove?.(room.state, seat, room.difficulty ?? 2);
     if (!mv) return;
     const res = room.module.applyMove(room.state, mv, seat);
@@ -84,22 +124,23 @@ async function maybeBotMove(room: Room) {
 io.on('connection', (socket) => {
   socket.on('listGames', (cb) => cb(listGames()));
 
-  socket.on('createGame', ({ gameId, playerId, name, vsBot, difficulty }, cb) => {
-    const module = getModule(gameId);
-    if (!module) return cb({ error: 'Bilinmeyen oyun.' });
-    if (vsBot && !module.getBotMove) {
-      return cb({ error: 'Bu oyunda bot desteklenmiyor.' });
-    }
-    const room = createRoom(module);
-    joinRoom(room, playerId, name ?? '');
-    socket.join(room.id);
-    sockets.set(socket.id, { roomId: room.id, playerId });
-    if (vsBot) {
-      addBot(room, difficulty ?? 2);
-      void maybeBotMove(room); // bot beyazsa ilk hamleyi yapar
-    }
-    cb({ roomId: room.id });
-  });
+  socket.on(
+    'createGame',
+    ({ gameId, playerId, name, vsBot, difficulty, config }, cb) => {
+      const module = getModule(gameId);
+      if (!module) return cb({ error: 'Bilinmeyen oyun.' });
+      if (vsBot && !module.getBotMove) {
+        return cb({ error: 'Bu oyunda bot desteklenmiyor.' });
+      }
+      const room = createRoom(module, config);
+      joinRoom(room, playerId, name ?? '');
+      socket.join(room.id);
+      sockets.set(socket.id, { roomId: room.id, playerId });
+      if (vsBot) addBot(room, difficulty ?? 2);
+      cb({ roomId: room.id }); // hemen dön; init (AI üretimi) arka planda
+      void initAndStart(room);
+    },
+  );
 
   socket.on('joinGame', ({ roomId, playerId, name }, cb) => {
     const room = getRoom(roomId);
@@ -158,9 +199,9 @@ io.on('connection', (socket) => {
   socket.on('rematch', ({ roomId }) => {
     const room = getRoom(roomId);
     if (!room) return;
-    resetGame(room);
-    broadcastState(room);
-    void maybeBotMove(room);
+    resetGame(room); // config'le yeni başlangıç (quiz: phase 'loading')
+    broadcastState(room); // önce loading'i göster
+    void initAndStart(room); // sonra yeni sorular üret + başlat
   });
 
   socket.on('disconnect', () => {

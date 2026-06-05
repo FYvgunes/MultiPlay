@@ -10,6 +10,7 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.100.1",
     "@oyun/shared": "*",
     "chess.js": "^1.4.0",
     "cors": "^2.8.5",

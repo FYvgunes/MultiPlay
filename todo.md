@@ -6,7 +6,7 @@ Link paylaşarak ailenle karşılıklı oyun. İlk oyun: **satranç**. Mimari ba
 - [x] npm workspaces monorepo (`client`, `server`, `shared`)
 - [x] `.gitignore`, `todo.md`
 - [x] `shared/types.ts`: `GameModule` arayüzü + socket event tipleri
-- [ ] git init
+- [x] git init (repo başlatıldı)
 
 ## Faz 1 — Backend (oyundan bağımsız çekirdek) ✅
 - [x] Express + Socket.IO server, CORS
@@ -42,10 +42,32 @@ Link paylaşarak ailenle karşılıklı oyun. İlk oyun: **satranç**. Mimari ba
 - [x] Prod build (`npm run build` + `npm run start`), `PORT` env desteği
 - [x] Socket URL: prod'da aynı origin, dev'de LAN:3001
 - [x] `render.yaml` + `Dockerfile` + `.dockerignore` + README rehberi
-- [ ] (senin adımın) GitHub'a gönder → Render Blueprint ile yayınla → linki paylaş
+- [x] GitHub'a gönderildi (FYvgunes/MultiPlay) → Render'da yayında ✅
+      🔗 https://aile-oyun-salonu.onrender.com (canlı test edildi: arayüz + socket + bot)
 
 ## Faz 5 — Native (opsiyonel)
 - [ ] Capacitor ile iOS/Android paketi
 
-## Faz 6 — İkinci oyun
-- [ ] XOX / dama ekleyerek platform soyutlamasını doğrula
+## Faz 6 — İkinci oyun: Bilgi Yarışması ✅
+- [x] Platform genel yetenekleri: config, async init, zamanlayıcı (getDeadline/onTimeout), pendingSeats, bot delay
+- [x] Quiz modülü (server): AI üretimi + viewFor ile cevap gizleme + skor/hız bonusu + bot
+- [x] AI soru üretici (Anthropic SDK, tool-use, cache) + anahtarsız fallback bank
+- [x] Quiz arayüzü (kategori, süre çubuğu, şıklar, reveal, skor) + lobi (kategori/çocuk/bot)
+- [x] Game.tsx genelleştirme + quiz sesleri
+- [x] Uçtan uca test (fallback ile) — ready→başlat→soru→reveal→bitiş, bot çalışıyor
+- [ ] Canlıda AI: Render'a `ANTHROPIC_API_KEY` ekle (yoksa fallback)
+
+## Faz 7 — Daha çok oyun ✅
+- [x] **XOX (Tic-Tac-Toe)**: 2 oyuncu, minimax bot (Kolay→Usta), kazanan çizgi vurgusu
+- [x] **Adam Asmaca**: paylaşımlı gizli kelime (8 kategori bankası), sıra tabanlı, harf
+      başına puan, Türkçe klavye, frekans tabanlı bot, `viewFor` ile kelime gizleme
+- [x] **İsim-Şehir**: 5 tur, 60 sn süre çubuğu, 5 kategori, 10/5/0 puanlama,
+      reveal tablosu, kelime bankalı bot, `viewFor` ile rakip cevap gizleme
+- [x] **Wordle**: paylaşımlı 5 harfli TR kelime, bağımsız yarış, renk geri bildirimi,
+      Türkçe klavye, aday-eleyen bot (Usta 98/98 çözer), `viewFor` ile rakip harf gizleme
+- [x] Hepsi `GameModule` sözleşmesine uygun; registry + Lobi + Game.tsx etiketleri bağlandı
+- [x] Build + uçtan uca bot-vs-bot mantık testi geçti
+
+## İleride
+- [ ] Geleneksel oyunlar: Dama, Tombala
+- [ ] Capacitor ile iOS/Android paketi (Faz 5)

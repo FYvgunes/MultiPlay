@@ -42,6 +42,24 @@ server/   Express + Socket.IO çekirdeği (oyundan bağımsız) + games/chess.ts
 client/   React + Vite; Lobby, Game ve games/chess/Board
 ```
 
+## Oyunlar
+
+- **Satranç** — tam kurallar, 2D/3D, ses, bota karşı (4 zorluk).
+- **Bilgi Yarışması** — maç başında kategori seçilir; 10 soru, süreli + hız bonusu;
+  arkadaşla (link) ya da bota karşı; çocuk/eğitim modu.
+  - Sorular **AI ile** üretilir (Claude API). `ANTHROPIC_API_KEY` ortam değişkeni
+    gerekir. **Anahtar yoksa** quiz yerleşik soru bankasıyla yine oynanır.
+
+### Bilgi Yarışması için AI anahtarı
+
+```bash
+# Geliştirmede:
+ANTHROPIC_API_KEY=sk-ant-... npm run dev
+```
+
+Render'da: servis → **Environment** → `ANTHROPIC_API_KEY` ekle (kökteki `render.yaml`
+bu değişkeni `sync:false` ile tanımlar; panelden değerini girersin).
+
 ## Yeni oyun eklemek
 
 1. `server/src/games/<oyun>.ts` → `GameModule` arayüzünü uygula.

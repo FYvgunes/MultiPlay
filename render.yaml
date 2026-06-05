@@ -12,3 +12,7 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      # Bilgi Yarışması'nda AI ile soru üretimi için (Render panelinden gir).
+      # Boş bırakılırsa quiz yerleşik soru bankasıyla çalışır.
+      - key: ANTHROPIC_API_KEY
+        sync: false

@@ -182,7 +182,7 @@ export default function Game() {
         )}
       </div>
 
-      {!effectiveStatus.over && !waiting && (
+      {!effectiveStatus.over && !waiting && turnLabel(snapshot, effectiveStatus) && (
         <p className="turn">{turnLabel(snapshot, effectiveStatus)}</p>
       )}
 
@@ -227,7 +227,8 @@ function legacyCopy(text: string): boolean {
 }
 
 function turnLabel(snap: RoomSnapshot, status: GameStatus): string {
-  if (snap.gameId !== 'chess') return status.turn ? `Sıra: ${status.turn}` : '';
+  // Satranç dışındaki oyunlar kendi durum/sıra göstergesini çizer.
+  if (snap.gameId !== 'chess') return '';
   const myColor = snap.yourSeat === 1 ? 'b' : 'w';
   const opponent = snap.players.find((p) => p.seat !== snap.yourSeat);
   if (snap.yourSeat === null)
@@ -238,6 +239,18 @@ function turnLabel(snap: RoomSnapshot, status: GameStatus): string {
 
 function resultLabel(snap: RoomSnapshot, status: GameStatus): string {
   const reason = status.reason ? `${status.reason}. ` : '';
+  if (snap.gameId === 'quiz') {
+    if (status.result === 'draw') return `${reason}Berabere!`;
+    if (snap.yourSeat === null) {
+      const winSeat = status.result === 'p0' ? 0 : 1;
+      const name = snap.players.find((p) => p.seat === winSeat)?.name ?? 'Oyuncu';
+      return `${reason}Kazanan: ${name}`;
+    }
+    const youWon =
+      (status.result === 'p0' && snap.yourSeat === 0) ||
+      (status.result === 'p1' && snap.yourSeat === 1);
+    return youWon ? `${reason}Kazandın! 🎉` : `${reason}Kaybettin.`;
+  }
   if (status.result === 'draw') return `${reason}Berabere.`;
   if (snap.gameId === 'chess') {
     const winnerColor = status.result === 'white' ? 'Beyaz' : 'Siyah';
@@ -246,6 +259,23 @@ function resultLabel(snap: RoomSnapshot, status: GameStatus): string {
       (status.result === 'black' && snap.yourSeat === 1);
     if (snap.yourSeat === null) return `${reason}${winnerColor} kazandı.`;
     return youWon ? `${reason}Kazandın! 🎉` : `${reason}Kaybettin.`;
+  }
+  // Koltuk tabanlı sonuç: p0/p1 (quiz/asmaca/isim-şehir/wordle) veya X/O (XOX).
+  const winSeat =
+    status.result === 'p0' || status.result === 'X'
+      ? 0
+      : status.result === 'p1' || status.result === 'O'
+        ? 1
+        : null;
+  if (winSeat !== null) {
+    if (snap.yourSeat === null) {
+      const name =
+        snap.players.find((p) => p.seat === winSeat)?.name ?? 'Oyuncu';
+      return `${reason}Kazanan: ${name}`;
+    }
+    return snap.yourSeat === winSeat
+      ? `${reason}Kazandın! 🎉`
+      : `${reason}Kaybettin.`;
   }
   return `${reason}Kazanan: ${status.result ?? '-'}`;
 }
