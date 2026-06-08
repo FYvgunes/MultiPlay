@@ -80,6 +80,10 @@ Kelime bankaları: `server/src/games/data/`. Quiz AI: `server/src/ai/`
   `--accent` ...). Yeni oyun CSS'i oyun-id öneki ile (`xox-`, `hm-`, `nc-`, `wd-`).
 - Otoriter durum sunucuda; client sadece `viewFor` görünümünü çizer ve `move` yollar.
 - Commit'ler `main` üzerinde (solo proje, PR akışı yok).
+- **Performans**: oyun bileşenleri `registry.tsx`'te `lazy()` ile code-split
+  (yeni oyun ağır bağımlılık getirse bile lobiyi şişirmez); ağır 3D/AI parçaları
+  ayrıca `import()` ile tembel yükle. Vite `manualChunks` vendor'ı ayırır. Sunucu
+  `compression` + `/assets/*` için `immutable` cache, `index.html` `no-cache` verir.
 
 ## Yapılacaklar (todo.md)
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import type { RoomSnapshot, GameStatus } from '@oyun/shared';
 import { socket, getPlayerId, getPlayerName } from '../socket';
@@ -176,7 +176,9 @@ export default function Game() {
 
       <div className="board-area">
         {GameComponent ? (
-          <GameComponent snapshot={snapshot} sendMove={sendMove} />
+          <Suspense fallback={<p className="muted">Oyun yükleniyor…</p>}>
+            <GameComponent snapshot={snapshot} sendMove={sendMove} />
+          </Suspense>
         ) : (
           <p className="error">Bu oyun ({snapshot.gameId}) desteklenmiyor.</p>
         )}

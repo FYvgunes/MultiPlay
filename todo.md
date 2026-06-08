@@ -75,5 +75,15 @@ Link paylaşarak ailenle karşılıklı oyun. İlk oyun: **satranç**. Mimari ba
       işaretleme, çinko/tombala tespiti, bot kusursuz oto-işaretler (`pendingSeats`+`getBotMove`)
 - [x] registry + Lobi + CSS bağlandı; build + bot/simülasyon testleri geçti
 
+## Faz 9 — Performans & deploy optimizasyonu ✅
+- [x] **Oyunları code-split** (`registry.tsx` lazy + Game.tsx Suspense): lobi artık
+      8 oyunun kodunu peşin indirmiyor; chess.js + react-chessboard ayrı chunk'a
+      taşındı (ilk indirme tek 382 kB bundle yerine ~76 kB gzip)
+- [x] **Vite manualChunks**: `vendor-react` + `vendor-socket` ayrı, uzun-cache'lenebilir
+- [x] **Sunucuda compression** (gzip) middleware — JS/CSS transferi ~3-4x küçük
+- [x] **Immutable cache header**: hash'li `/assets/*` 1 yıl, `index.html` no-cache
+- [x] **Multi-stage Dockerfile**: runner imajı yalnızca dist + prod deps (küçük, hızlı)
+- [x] Prod runtime testi: health + gzip + cache header'lar doğrulandı
+
 ## İleride
 - [ ] Capacitor ile iOS/Android paketi (Faz 5)

@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import express from 'express';
 import cors from 'cors';
+import compression from 'compression';
 import { Server } from 'socket.io';
 import type {
   ClientToServerEvents,
@@ -29,6 +30,8 @@ const PORT = Number(process.env.PORT) || 3001;
 const ORIGIN = process.env.CLIENT_ORIGIN || '*';
 
 const app = express();
+// Tüm yanıtları gzip/deflate ile sıkıştır (JS/CSS/JSON transferini ~3-4x küçültür).
+app.use(compression());
 app.use(cors({ origin: ORIGIN }));
 app.get('/health', (_req, res) => res.json({ ok: true }));
 app.get('/games', (_req, res) => res.json(listGames()));
@@ -40,9 +43,24 @@ const clientDist = path.resolve(
   '../../client/dist',
 );
 if (fs.existsSync(clientDist)) {
-  app.use(express.static(clientDist));
+  app.use(
+    express.static(clientDist, {
+      setHeaders: (res, filePath) => {
+        // /assets/*.js|css dosya adları içerik-hash'li → güvenle "ölümsüz"
+        // cache. index.html her zaman taze (yeni deploy anında yansısın).
+        if (filePath.includes(`${path.sep}assets${path.sep}`)) {
+          res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+        } else {
+          res.setHeader('Cache-Control', 'no-cache');
+        }
+      },
+    }),
+  );
   // SPA fallback: API/socket dışındaki yolları index.html'e yönlendir.
-  app.get('*', (_req, res) => res.sendFile(path.join(clientDist, 'index.html')));
+  app.get('*', (_req, res) => {
+    res.setHeader('Cache-Control', 'no-cache');
+    res.sendFile(path.join(clientDist, 'index.html'));
+  });
   console.log('📦 Arayüz servis ediliyor:', clientDist);
 }
 

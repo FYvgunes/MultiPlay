@@ -1,13 +1,5 @@
-import type { ComponentType } from 'react';
+import { lazy, type ComponentType } from 'react';
 import type { RoomSnapshot } from '@oyun/shared';
-import ChessBoardGame from './chess';
-import QuizGame from './quiz';
-import TicTacToeGame from './tictactoe';
-import HangmanGame from './hangman';
-import NameCityGame from './namecity';
-import WordleGame from './wordle';
-import DamaGame from './dama';
-import TombalaGame from './tombala';
 
 /** Her oyun bileşeninin aldığı ortak proplar. */
 export interface GameComponentProps {
@@ -15,16 +7,18 @@ export interface GameComponentProps {
   sendMove: (payload: unknown) => void;
 }
 
-// gameId -> React bileşeni. Yeni oyun eklemek için buraya bir satır ekle.
+// gameId -> React bileşeni. Hız için her oyun TEMBEL (lazy) yüklenir:
+// kullanıcı yalnızca oynadığı oyunun JS'ini indirir (chess.js + react-chessboard
+// gibi ağır bağımlılıklar ana bundle'dan çıkar). Yeni oyun = buraya bir satır.
 const components: Record<string, ComponentType<GameComponentProps>> = {
-  chess: ChessBoardGame,
-  quiz: QuizGame,
-  tictactoe: TicTacToeGame,
-  hangman: HangmanGame,
-  namecity: NameCityGame,
-  wordle: WordleGame,
-  dama: DamaGame,
-  tombala: TombalaGame,
+  chess: lazy(() => import('./chess')),
+  quiz: lazy(() => import('./quiz')),
+  tictactoe: lazy(() => import('./tictactoe')),
+  hangman: lazy(() => import('./hangman')),
+  namecity: lazy(() => import('./namecity')),
+  wordle: lazy(() => import('./wordle')),
+  dama: lazy(() => import('./dama')),
+  tombala: lazy(() => import('./tombala')),
 };
 
 export function getGameComponent(

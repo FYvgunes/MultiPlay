@@ -13,12 +13,14 @@
     "@anthropic-ai/sdk": "^0.100.1",
     "@oyun/shared": "*",
     "chess.js": "^1.4.0",
+    "compression": "^1.8.1",
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "nanoid": "^5.0.9",
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
+    "@types/compression": "^1.8.1",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/node": "^22.10.5",
